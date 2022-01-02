@@ -11,8 +11,6 @@ const LocalStrategy = require('passport-local');
 const app = express();
 app.set('view engine', 'pug');
 
-
-
 fccTesting(app); // For fCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
@@ -45,18 +43,28 @@ myDB(async (client) => {
     res.redirect('/profile');
   });
 
+  app.route('/profile').get(ensureAuthenticated, (req, res) => {
+    res.render(process.cwd() + '/views/pug/profile', { username: req.user.username });
+  });
+
+  app.route('/logout').get((req, res) => {
+    req.logout();
+    res.redirect('/');
+  });
+
+  app.use((req, res, next) => {
+    res.status(404).type('text').send('Not Found');
+  });
+
   // Serialization and deserialization here...
   passport.serializeUser((user, done) => {
     done(null, user._id);
   });
-
   passport.deserializeUser((id, done) => {
     myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
       done(null, doc);
     });
   });
-
-  //Local Strategy here
   passport.use(new LocalStrategy(
       function(username, password, done) {
         myDataBase.findOne({ username: username }, function (err, user) {
@@ -68,7 +76,6 @@ myDB(async (client) => {
         });
       }
   ));
-
   // Be sure to add this...
 }).catch((e) => {
   app.route('/').get((req, res) => {
@@ -76,17 +83,13 @@ myDB(async (client) => {
   });
 });
 
-function ensureAuthenticated(req,res,next) {
-  if(req.isAuthenticated()) {
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
     return next();
   }
   res.redirect('/');
 }
 
-app.route('/profile')
-    .get(ensureAuthenticated, (req,res) => {
-      res.render(process.cwd() + '/views/pug/profile', { username: req.user.username });
-    });
 // app.listen out here...
 
 app.listen(process.env.PORT || 3000, () => {
