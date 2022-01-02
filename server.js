@@ -83,10 +83,9 @@ function ensureAuthenticated(req,res,next) {
   res.redirect('/');
 }
 
-app
-    .route('/profile')
+app.route('/profile')
     .get(ensureAuthenticated, (req,res) => {
-      res.render(process.cwd() + '/views/pug/profile');
+      res.render(process.cwd() + '/views/pug/profile', { username: req.user.username });
     });
 // app.listen out here...
 
