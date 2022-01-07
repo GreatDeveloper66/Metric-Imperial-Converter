@@ -8,6 +8,7 @@ const passport = require('passport');
 const routes = require('./routes');
 const auth = require('./auth.js');
 const MongoStore = require('connect-mongo')(session);
+const URI = process.env.MONGO_URI;
 
 const app = express();
 const http = require('http').createServer(app);
