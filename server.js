@@ -68,7 +68,11 @@ myDB(async (client) => {
       --currentUsers;
       io.emit('user count', currentUsers);
     });
-  });
+
+
+
+
+    });
 }).catch((e) => {
   app.route('/').get((req, res) => {
     res.render('pug', { title: e, message: 'Unable to login' });
