@@ -38,6 +38,15 @@ myDB(async (client) => {
   routes(app, myDataBase);
   auth(app, myDataBase);
 
+  io.use(
+      passportSocketIO.authorize({
+        cookieParser: cookieParser,
+        key: 'express.sid',
+        store: store,
+        success: onAuthorizeSuccess,
+        fail: onAuthorizeFail
+      })
+  )
   let currentUsers = 0
   io.on('connection', (socket) => {
     currentUsers += 1
@@ -59,3 +68,10 @@ myDB(async (client) => {
 http.listen(process.env.PORT || 3000, () => {
   console.log('Listening on port ' + process.env.PORT);
 });
+
+
+function onAuthorizeSuccess(data, accept) {
+  console.log('successful connection to socket.io');
+  accept(null, true);
+}
+
