@@ -13,6 +13,7 @@ $(document).ready(function () {
     let messageToSend = $('#m').val();
     // Send message to server here?
     $('#m').val('');
+    socket.emit('chat message', messageToSend)
     return false; // Prevent form submit from refreshing page
   });
 });
