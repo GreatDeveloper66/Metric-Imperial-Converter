@@ -61,18 +61,20 @@ myDB(async (client) => {
       currentUsers,
       connected: true
     });
-    console.log('user ' + socket.request.user.username + ' connected');
-
+    socket.on('chat message', (message) => {
+      io.emit('chat message', { name: socket.request.user.name, message });
+    });
+    console.log('A user has connected');
     socket.on('disconnect', () => {
       console.log('A user has disconnected');
       --currentUsers;
-      io.emit('user count', currentUsers);
+      io.emit('user', {
+        name: socket.request.user.name,
+        currentUsers,
+        connected: false
+      });
     });
-
-
-
-
-    });
+  });
 }).catch((e) => {
   app.route('/').get((req, res) => {
     res.render('pug', { title: e, message: 'Unable to login' });
